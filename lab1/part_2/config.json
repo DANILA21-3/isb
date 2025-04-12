@@ -1,0 +1,7 @@
+{
+    "statistics_probability" : "statistics_probability.json",
+    "custom_replacements" : "custom_replacements.json",
+    "input_text" : "cod23.txt",
+    "frequency_dict" : "frequency_dict.json",
+    "result_text" : "result.txt"
+}

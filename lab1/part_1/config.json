@@ -1,0 +1,6 @@
+{
+    "input_file_path": "text.txt",
+    "encrypted_text_output_file_path": "crypt_text.txt",
+    "decrypted_text_output_file_path": "decrypt_text.txt",
+    "requirements_file_path": "key.json"
+}

@@ -1,6 +1,8 @@
 import math
 from scipy.special import gammaincc
 import numpy as np
+from read_write_function import read_file
+
 
 def pobit_test(sequence: str) -> float:
     """
@@ -10,10 +12,13 @@ def pobit_test(sequence: str) -> float:
 
     :return: Возвращает P значение
     """
+    config = read_file('config.json','json')
+    cfg = config["Const"]
+
     N = len(sequence)
     x = [1 if char == "1" else -1 for char in sequence]
     S_N = sum(x)/math.sqrt(N)
-    P = math.erfc(S_N/math.sqrt(2))
+    P = math.erfc(S_N/cfg["sqrt_2"])
     return P
 
 def test_on_repeat_bit(sequence: str) -> float:
@@ -50,10 +55,12 @@ def test_with_blocks(sequence: str) -> float:
     :return: Возвращает P значение
 
     """
-    N = len(sequence)
-    M = 8  
+    config = read_file('config.json','json')
+    cfg = config["Const"]
 
-    blocks = [sequence[i:i+M] for i in range(0, N, M) if i+M <= N]
+    N = len(sequence) 
+
+    blocks = [sequence[i:i+cfg["M"]] for i in range(0, N, cfg["M"]) if i+cfg["M"] <= N]
 
     V = [0, 0, 0, 0]
     for block in blocks:
@@ -70,7 +77,7 @@ def test_with_blocks(sequence: str) -> float:
                 V[max_ones-1] += 1
     V = np.array(V)
 
-    pi = np.array([0.2148, 0.3672, 0.2305, 0.1875])
+    pi = np.array([cfg["pi_1"], cfg["pi_2"], cfg["pi_3"], cfg["pi_4"]])
     X_squared = np.sum(((V-16*pi)**2)/(16*pi))
 
     P = gammaincc(3/2, X_squared/2)

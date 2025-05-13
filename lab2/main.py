@@ -14,18 +14,19 @@ def calculate_p(sequence: str)->float:
 def main():
     try:
         config = read_file('config.json','json')
+        cfg = config["Directory"]
 
-        sequence_cpp = read_file(config['sequence_cpp'], 'text') 
+        sequence_cpp = read_file(cfg['sequence_cpp'], 'text') 
         print(f"cpp_generator: {sequence_cpp}")
 
-        sequence_java = read_file(config['sequence_java'], 'text') 
+        sequence_java = read_file(cfg['sequence_java'], 'text') 
         print(f"java_generator: {sequence_java}")
 
         result_cpp = calculate_p(sequence_cpp)
         result_java = calculate_p(sequence_java)
         result = result_cpp + result_java
 
-        write_to_file(config['P-values'], result, 'text')
+        write_to_file(cfg['P-values'], result, 'text')
         print("P-значения успешно записаны в файл")
 
     except Exception as e:

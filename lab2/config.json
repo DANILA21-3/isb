@@ -1,5 +1,15 @@
 {
-    "sequence_cpp" : "sequence_cpp.txt",
-    "sequence_java" : "sequence_java.txt",
-    "P-values" : "p_values.txt"
+    "Directory":{
+        "sequence_cpp" : "sequence_cpp.txt",
+        "sequence_java" : "sequence_java.txt",
+        "P-values" : "p_values.txt"
+    },
+    "Const":{
+        "sqrt_2" : 1.414213562373095,
+        "M" : 8,
+        "pi_1" : 0.2148,
+        "pi_2" : 0.3672,
+        "pi_3" : 0.2305,
+        "pi_4" : 0.1875
+    }
 }

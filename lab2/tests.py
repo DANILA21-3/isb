@@ -1,10 +1,9 @@
 import math
 from scipy.special import gammaincc
 import numpy as np
-from read_write_function import read_file
 
 
-def pobit_test(sequence: str) -> float:
+def pobit_test(sequence: str, sqrt_2: float) -> float:
     """
     Функция подсчитывает частоту встречаемости единиц и на основе этого вычисляет P значение
 
@@ -12,13 +11,10 @@ def pobit_test(sequence: str) -> float:
 
     :return: Возвращает P значение
     """
-    config = read_file('config.json','json')
-    cfg = config["Const"]
-
     N = len(sequence)
     x = [1 if char == "1" else -1 for char in sequence]
     S_N = sum(x)/math.sqrt(N)
-    P = math.erfc(S_N/cfg["sqrt_2"])
+    P = math.erfc(S_N/sqrt_2)
     return P
 
 def test_on_repeat_bit(sequence: str) -> float:
@@ -44,7 +40,7 @@ def test_on_repeat_bit(sequence: str) -> float:
         return 0.0
 
 
-def test_with_blocks(sequence: str) -> float:
+def test_with_blocks(sequence: str, M: int, pi) -> float:
     """
     Функция разбивает последовательность на блоки длиной 8 бит, вычисляет максимальное количество идущих подряд
     единиц в каждом из них и подсчитывает кол-во блоков с определёнными количествами единиц. Затем производится 
@@ -55,12 +51,10 @@ def test_with_blocks(sequence: str) -> float:
     :return: Возвращает P значение
 
     """
-    config = read_file('config.json','json')
-    cfg = config["Const"]
 
     N = len(sequence) 
 
-    blocks = [sequence[i:i+cfg["M"]] for i in range(0, N, cfg["M"]) if i+cfg["M"] <= N]
+    blocks = [sequence[i:i+M] for i in range(0, N, M) if i+M <= N]
 
     V = [0, 0, 0, 0]
     for block in blocks:
@@ -77,7 +71,6 @@ def test_with_blocks(sequence: str) -> float:
                 V[max_ones-1] += 1
     V = np.array(V)
 
-    pi = np.array([cfg["pi_1"], cfg["pi_2"], cfg["pi_3"], cfg["pi_4"]])
     X_squared = np.sum(((V-16*pi)**2)/(16*pi))
 
     P = gammaincc(3/2, X_squared/2)

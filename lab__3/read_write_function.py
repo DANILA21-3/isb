@@ -17,6 +17,9 @@ def read_file(file_path: str, file_type: str = 'json') -> Union[dict, str]:
             case 'text':
                 with open(file_path, 'r', encoding='utf-8') as file:
                     return file.read()
+            case 'bin':
+                with open(file_path, 'rb') as file:
+                    return file.read()
             case _:
                 raise ValueError("Неподдерживаемый формат файла")
     except Exception as e:
@@ -38,6 +41,9 @@ def write_to_file(file_path: str, data: Union[str, dict], file_type: str):
                     json.dump(data, file, ensure_ascii=False, indent=1)
             case 'text':
                 with open(file_path, 'w', encoding='utf-8') as file:
+                    file.write(data)
+            case 'bin':
+                with open(file_path, 'wb') as file:
                     file.write(data)
             case _:
                 raise ValueError("Неподдерживаемый формат файла")

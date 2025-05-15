@@ -26,10 +26,14 @@ def serialization_public_key(public_key, public_pem : str):
     :param public_key: публичный ключ для записи
     :param public_pem: путь для записи
     """
-    with open(public_pem, 'wb') as public_out:
-        public_out.write(public_key.public_bytes(encoding=serialization.Encoding.PEM,
-                                                format=serialization.PublicFormat.SubjectPublicKeyInfo))
-         
+    try:
+        with open(public_pem, 'wb') as public_out:
+            public_out.write(public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo))
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        
 def serialization_private_key(private_key, private_pem : str):
     """
     Записывает приватный в файл
@@ -37,10 +41,13 @@ def serialization_private_key(private_key, private_pem : str):
     :param private_key: приватный ключ для записи
     :param private_pem: путь для записи
     """
-    with open(private_pem, 'wb') as private_out:
-        private_out.write(private_key.private_bytes(encoding=serialization.Encoding.PEM,
-                                                    format=serialization.PrivateFormat.TraditionalOpenSSL,
-                                                    encryption_algorithm=serialization.NoEncryption()))
+    try:
+        with open(private_pem, 'wb') as private_out:
+            private_out.write(private_key.private_bytes(encoding=serialization.Encoding.PEM,
+                                                        format=serialization.PrivateFormat.TraditionalOpenSSL,
+                                                        encryption_algorithm=serialization.NoEncryption()))
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
         
 def deserialization_public_key(public_pem : str):
     """
@@ -50,9 +57,12 @@ def deserialization_public_key(public_pem : str):
 
     :return d_public_key: значение ключа
     """
-    with open(public_pem, 'rb') as pem_in:
-        public_bytes = pem_in.read()
-    d_public_key = load_pem_public_key(public_bytes)
+    try:
+        with open(public_pem, 'rb') as pem_in:
+            public_bytes = pem_in.read()
+        d_public_key = load_pem_public_key(public_bytes)
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
 
     return d_public_key
 
@@ -64,9 +74,12 @@ def deserialization_private_key(private_pem : str):
 
     :return d_private_key: значение ключа
     """
-    with open(private_pem, 'rb') as pem_in:
-        private_bytes = pem_in.read()
-    d_private_key = load_pem_private_key(private_bytes,password=None,)
+    try:
+        with open(private_pem, 'rb') as pem_in:
+            private_bytes = pem_in.read()
+        d_private_key = load_pem_private_key(private_bytes,password=None,)
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
 
     return d_private_key
 
@@ -79,7 +92,6 @@ def crypt_key_or_nonce(public_key, data):
     :param data: шифруемый ключ или шифруемый параметр
 
     :return encrypted_key: зашифрованный ключ/параметр
-
     """
     encrypted_data = public_key.encrypt(data,
                                        padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -97,7 +109,6 @@ def decrypt_key(private_key, data):
     :param data: расшифруемый ключ или расшифруемый параметр
 
     :return decrypted_data: зашифрованный ключ/параметр
-
     """
     decrypted_data = private_key.decrypt(data,
                                         padding.OAEP(

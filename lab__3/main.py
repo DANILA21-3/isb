@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from read_write_function import read_file
+from read_write_function import read_file, write_to_file
 from sym import *
 from asym import *
 
@@ -21,7 +21,6 @@ def generation_mode(enc_key_path: str, length_key: int,
     :param length_nonce: длина параметра
     :param public_key_path: публичный ключ 
     :param private_key_path: приватный ключ
-
     """
     sym_key, nonce = generate_key_and_nonce(length_key,length_nonce)
     
@@ -49,24 +48,17 @@ def encryption_mode(input_file: str, priv_key_path: str, enc_key_path: str, enc_
     :param enc_key_path: зашифрованный сим ключ
     :param output_file: зашифрованный текст
     """
+    plaintext = read_file(input_file, 'text')
     private_key = deserialization_private_key(priv_key_path)
+    encrypted_sym_key = read_file(enc_key_path, 'bin')
+    encrypted_nonce = read_file(enc_nonce_path, 'bin')
     
-    with open(enc_key_path, 'rb') as f:
-        encrypted_sym_key = f.read()
     sym_key = decrypt_key(private_key, encrypted_sym_key)
-
-    with open(enc_nonce_path, 'rb') as f:
-        encrypted_nonce = f.read()
     nonce = decrypt_key(private_key, encrypted_nonce)
-
-    with open(input_file, 'r', encoding='utf-8') as f:
-        plaintext = f.read()
     
     ciphertext = crypt_text(sym_key, nonce, plaintext)
     
-    with open(output_file, 'wb') as f:
-        f.write(ciphertext)
-    
+    write_to_file(output_file, ciphertext, 'bin')
     print(f"Файл успешно зашифрован и сохранен в {output_file}")
 
 def decryption_mode(input_file: str, priv_key_path: str, enc_key_path: str, enc_nonce_path: str, output_file: str):
@@ -79,26 +71,16 @@ def decryption_mode(input_file: str, priv_key_path: str, enc_key_path: str, enc_
     :param output_file: расшифрованный текст
     """
     private_key = deserialization_private_key(priv_key_path)
-    
-    with open(enc_key_path, 'rb') as f:
-        encrypted_sym_key = f.read()
+    encrypted_sym_key = read_file(enc_key_path, 'bin')
+    encrypted_nonce = read_file(enc_nonce_path, 'bin')
+    ciphertext = read_file(input_file, 'bin')
 
-    with open(enc_nonce_path, 'rb') as f:
-        encrypted_nonce = f.read()
-    
     sym_key = decrypt_key(private_key, encrypted_sym_key)
     nonce = decrypt_key(private_key, encrypted_nonce)
-    
-    with open(input_file, 'rb') as f:
-        ciphertext = f.read()
-    
     plaintext = decrypt_text(sym_key, nonce, ciphertext)
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(plaintext)
-    
-    print(f"Файл успешно дешифрован и сохранен в {output_file}")
 
+    write_to_file(plaintext, 'text')
+    print(f"Файл успешно дешифрован и сохранен в {output_file}")
 
 def main(): 
     try:
@@ -114,9 +96,12 @@ def main():
         args = parser.parse_args()
         
         if args.generation:
-            generation_mode(config["enc_key_path"], config_length["length_key"], 
-                            config["enc_nonce_path"], config_length["length_nonce"], 
-                            config["public_key_path"], config["private_key_path"])
+            generation_mode(config["enc_key_path"], 
+                            config_length["length_key"], 
+                            config["enc_nonce_path"], 
+                            config_length["length_nonce"], 
+                            config["public_key_path"], 
+                            config["private_key_path"])
         elif args.encryption:
             encryption_mode(config["input_text"], config["private_key_path"], config["enc_key_path"], config["enc_nonce_path"], config["enc_text"])
         elif args.decryption:
@@ -124,10 +109,6 @@ def main():
     except Exception as e:
         print(f"Ошибка при выполнении кода: {str(e)}")
         sys.exit(1)
-
-
-    
-  
 
 if __name__ == "__main__":
     main()

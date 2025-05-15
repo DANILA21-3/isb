@@ -79,7 +79,7 @@ def decryption_mode(input_file: str, priv_key_path: str, enc_key_path: str, enc_
     nonce = decrypt_key(private_key, encrypted_nonce)
     plaintext = decrypt_text(sym_key, nonce, ciphertext)
 
-    write_to_file(plaintext, 'text')
+    write_to_file(output_file, plaintext, 'text')
     print(f"Файл успешно дешифрован и сохранен в {output_file}")
 
 def main(): 
